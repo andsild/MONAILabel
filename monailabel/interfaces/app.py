@@ -289,6 +289,7 @@ class MONAILabelApp:
         else:
             request["save_label"] = False
 
+        torch_raw_result = None
         if self._infers_threadpool:
 
             def run_infer_in_thread(t, r):
@@ -297,7 +298,7 @@ class MONAILabelApp:
             f = self._infers_threadpool.submit(run_infer_in_thread, t=task, r=request)
             result_file_name, result_json = f.result(request.get("timeout", settings.MONAI_LABEL_INFER_TIMEOUT))
         else:
-            result_file_name, result_json = task(request)
+            result_file_name, result_json, torch_raw_result = task(request)
 
         label_id = None
         if result_file_name and os.path.exists(result_file_name):
@@ -310,7 +311,7 @@ class MONAILabelApp:
             else:
                 label_id = result_file_name
 
-        return {"label": label_id, "tag": DefaultLabelTag.ORIGINAL, "file": result_file_name, "params": result_json}
+        return {"label": label_id, "tag": DefaultLabelTag.ORIGINAL, "file": result_file_name, "params": result_json, "torch_raw_result": torch_raw_result}
 
     def batch_infer(self, request, datastore=None):
         """

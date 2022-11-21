@@ -298,6 +298,8 @@ class BasicInferTask(InferTask):
 
         start = time.time()
         data = self.run_inferer(data, device=device)
+        # FIXME: we're running it twice..
+        torch_raw_result = data["pred"].clone()
         if callback_run_inferer:
             data = callback_run_inferer(data)
         latency_inferer = time.time() - start
@@ -350,7 +352,7 @@ class BasicInferTask(InferTask):
         if result_file_name is not None and isinstance(result_file_name, str):
             logger.info(f"Result File: {result_file_name}")
         logger.info(f"Result Json Keys: {list(result_json.keys())}")
-        return result_file_name, result_json
+        return result_file_name, result_json, torch_raw_result
 
     def run_pre_transforms(self, data: Dict[str, Any], transforms):
         pre_cache: List[Any] = []
