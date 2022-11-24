@@ -13,6 +13,7 @@ import copy
 import logging
 import multiprocessing
 import os
+import sys
 import platform
 import random
 import shutil
@@ -631,6 +632,9 @@ class MONAILabelApp:
         request = copy.deepcopy(request)
         if not os.path.exists(image):
             datastore = datastore if datastore else self.datastore()
+            img_url = datastore.get_image_uri(request["image"]) 
+            if img_url is None or img_url == '':
+                logger.warning(f'Image {request["image"]} not found')
             image = datastore.get_image_uri(request["image"])
 
         # Possibly region (e.g. DSA)
