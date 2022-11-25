@@ -65,6 +65,8 @@ def send_response(datastore, result, output, background_tasks):
         return res_json
 
     m_type = get_mime_type(res_img)
+    logger.info(f"HTTP: Returning file contents {res_img}")
+    
     return FileResponse(res_img, media_type=m_type, filename=os.path.basename(res_img))
 
 
@@ -80,7 +82,7 @@ def run_wsi_inference(
     request = {"model": model, "image": image, "output": output.value if output else None}
 
     if not file and not image and not session_id:
-        raise HTTPException(status_code=500, detail="Neither Image nor File not Session ID input is provided")
+        raise HTTPException(status_code=500, detail="Neither Image nor File nor Session ID input is provided")
 
     instance: MONAILabelApp = app_instance()
 
@@ -110,6 +112,7 @@ def run_wsi_inference(
     result = instance.infer_wsi(request)
     if result is None:
         raise HTTPException(status_code=500, detail="Failed to execute wsi infer")
+    
     return send_response(instance.datastore(), result, output, background_tasks)
 
 

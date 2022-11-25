@@ -352,6 +352,7 @@ class BasicInferTask(InferTask):
         if result_file_name is not None and isinstance(result_file_name, str):
             logger.info(f"Result File: {result_file_name}")
         logger.info(f"Result Json Keys: {list(result_json.keys())}")
+        import ipdb; ipdb.set_trace()
         return result_file_name, result_json, torch_raw_result
 
     def run_pre_transforms(self, data: Dict[str, Any], transforms):

@@ -90,6 +90,7 @@ def send_response(datastore, result, output, background_tasks):
     m_type = get_mime_type(res_img)
 
     if output == "image":
+        logger.info(f"HTTP: Returning file contents {res_img}")
         return FileResponse(res_img, media_type=m_type, filename=os.path.basename(res_img))
 
     res_fields = dict()
@@ -101,6 +102,7 @@ def send_response(datastore, result, output, background_tasks):
         return res_json
 
     return_message = MultipartEncoder(fields=res_fields)
+    logger.info("HTTP: Returning raw content")
     return Response(content=return_message.to_string(), media_type=return_message.content_type)
 
 
